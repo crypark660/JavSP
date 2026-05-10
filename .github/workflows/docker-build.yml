@@ -1,9 +1,12 @@
 name: Build and Push Docker Image
 
+# 修改开始：在这里添加 workflow_dispatch
 on:
+  workflow_dispatch:  # 这行代码允许你在网页上手动点击按钮触发
   push:
     branches:
-      - main # 当推送到 main 分支时触发
+      - main 
+# 修改结束
 
 jobs:
   build:
@@ -34,6 +37,6 @@ jobs:
         uses: docker/build-push-action@v4
         with:
           context: .
-          file: ./Dockerfile # 指定你的 Dockerfile 路径
+          file: ./Dockerfile
           push: true
-          tags: crypark/javs5:latest # 替换为你的用户名和镜像名
+          tags: crypark/javs5:latest # 记得替换这里
