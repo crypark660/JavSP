@@ -16,4 +16,4 @@ ENV POETRY_VIRTUALENVS_CREATE=false
 RUN poetry install --no-interaction
 
 # 设置入口命令为 javsp
-CMD ["javsp"]
+CMD ["./watcher.sh"]
