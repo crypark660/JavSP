@@ -200,7 +200,7 @@ class Movie:
                 move_file(fullpath, newpath)
                 new_paths.append(newpath)
         self.new_paths = new_paths
-        if len(os.listdir(dir)) == 0:
+        if len(os.listdir(dir)) == 0 and os.path.abspath(dir) != "/download":
             #如果移动文件后目录为空则删除该目录
             os.rmdir(dir)
 

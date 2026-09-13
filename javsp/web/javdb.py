@@ -184,7 +184,7 @@ def parse_data(movie: MovieInfo):
     actors_tag = info.xpath("//strong[text()='演員:']/../span")[0]
     all_actors = actors_tag.xpath("a/text()")
     genders = actors_tag.xpath("strong/text()")
-    actress = [i for i in all_actors if genders[all_actors.index(i)] == '♀']
+    actress = [i for i, g in zip(all_actors, genders) if g == '♀']
     magnet = container.xpath("//div[@class='magnet-name column is-four-fifths']/a/@href")
 
     movie.dvdid = dvdid
