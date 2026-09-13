@@ -91,3 +91,82 @@
 ---
 
 ![Star History Chart](https://api.star-history.com/svg?repos=Yuukiy/JavSP&type=Date)
+
+
+## 本 Fork 修改与新增功能
+
+本 Fork 基于 [Yuukiy/JavSP](https://github.com/Yuukiy/JavSP)，在原项目基础上针对 Docker / NAS 使用场景进行了修复和功能增强。
+
+### 🔧 Bug 修复
+
+- **修复 JavDB 演员解析 `IndexError`**：修复部分 JavDB 页面中演员与性别数据数量不一致导致的异常，提高 JavDB 刮削稳定性。
+- **修复 Docker `/download` 目录删除异常**：避免影片移动完成后尝试删除 Docker 挂载目录导致 `Device or resource busy`。
+
+### 🤖 Docker 自动刮削守护
+
+新增 `watcher.sh`，用于 Docker 环境下自动监控影片目录。
+
+主要功能：
+
+- 自动监控 `/download` 目录。
+- 检测到新影片后自动等待文件传输完成。
+- 通过连续检查文件总大小判断文件是否稳定。
+- 文件稳定后自动启动 JavSP 进行刮削。
+- JavSP 完成后自动退出并继续等待下一批影片。
+- 刮削异常时等待后继续监控。
+- Docker 容器停止时自动停止正在运行的 JavSP 进程。
+- 不依赖宿主机 `systemd`、`cron` 等额外守护服务。
+
+### 🐳 Docker 使用
+
+当前 Docker 镜像默认使用 `watcher.sh` 作为入口：
+
+```dockerfile
+CMD ["./watcher.sh"]
+```
+
+推荐使用 Docker `restart: always`，这样 NAS 或 Docker 服务重启后可以自动恢复监控。
+
+示例：
+
+```bash
+docker run -d \\
+  --name javs5 \\
+  --network host \\
+  --restart always \\
+  -v /path/to/config.yml:/app/config.yml \\
+  -v /path/to/videos:/download \\
+  -v /path/to/jav:/jav \\
+  crypark/javs5:latest
+```
+
+### 📁 自动刮削流程
+
+```text
+/download
+    │
+    ▼
+检测到新影片
+    │
+    ▼
+等待文件传输完成
+    │
+    ▼
+文件大小连续稳定
+    │
+    ▼
+启动 JavSP
+    │
+    ▼
+自动刮削 / 写入 NFO / 整理影片
+    │
+    ▼
+JavSP 退出
+    │
+    ▼
+继续监控 /download
+```
+
+### ⚠️ 注意
+
+`watcher.sh` 主要针对 Docker/NAS 自动刮削场景设计。如果仅需要手动运行 JavSP，可以继续按照原项目的命令行方式使用。
